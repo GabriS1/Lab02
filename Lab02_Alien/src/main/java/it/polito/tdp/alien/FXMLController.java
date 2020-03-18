@@ -3,6 +3,7 @@ package it.polito.tdp.alien;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import it.polito.tdp.alien.model.Model;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -10,6 +11,8 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 
 public class FXMLController {
+	
+	private Model model;
 
 	@FXML
 	private ResourceBundle resources;
@@ -29,7 +32,6 @@ public class FXMLController {
 	@FXML
 	private Button btnClear;
 
-	AlienDictionary dizionario = new AlienDictionary();
 	
 
 	@FXML
@@ -42,12 +44,11 @@ public class FXMLController {
 	@FXML
 	void doTraslate(ActionEvent event) {
 		
-
 		String s1 = "";
 		
 		s1 = txtParola.getText();
 		for(int i=0; i<s1.length(); i++) {
-			if(!Character.isAlphabetic(s1.charAt(i)) && !(s1.charAt(i)==' ')) {
+			if(!Character.isAlphabetic(s1.charAt(i)) && (!(s1.charAt(i)==' ') && !(s1.charAt(i)=='?'))) {
 				txtResult.setText("Devi inserire delle lettere!!\n");
 				return;
 			}
@@ -61,14 +62,18 @@ public class FXMLController {
 			aliena = s.substring(0, s.indexOf(" "));
 			traduzione = s.substring(s.indexOf(" ") + 1);
 
-			dizionario.addWord(aliena, traduzione);
+			model.getDizionario().addWord(aliena, traduzione);
 			
 			txtParola.clear();
 			txtResult.appendText("Aggiunta la parola al dizionario \n");
 			
 		}else {  //caso in cui devo solo tradurre
-			String risultato = dizionario.translateWord(s);
+			String risultato = model.getDizionario().translateWord(s);
+			if(risultato!=null) {
 			txtResult.appendText("La traduzione è: "+risultato+"\n");
+			}else {
+				txtResult.appendText("La parola non è presente nel dizionario");
+			}
 			txtParola.clear();
 		}
 	}
@@ -82,5 +87,8 @@ public class FXMLController {
 
 	}
 	
+	public void setModel(Model model) {
+		this.model=model;
+	}
 	
 }
